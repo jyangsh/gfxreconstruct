@@ -1029,6 +1029,26 @@ void MapStructHandles(Decoded_VkDedicatedAllocationMemoryAllocateInfoNV* wrapper
     }
 }
 
+void MapStructHandles(Decoded_VkCuFunctionCreateInfoNVX* wrapper, const VulkanObjectInfoTable& object_info_table)
+{
+    if ((wrapper != nullptr) && (wrapper->decoded_value != nullptr))
+    {
+        VkCuFunctionCreateInfoNVX* value = wrapper->decoded_value;
+
+        value->module = handle_mapping::MapHandle<CuModuleNVXInfo>(wrapper->module, object_info_table, &VulkanObjectInfoTable::GetCuModuleNVXInfo);
+    }
+}
+
+void MapStructHandles(Decoded_VkCuLaunchInfoNVX* wrapper, const VulkanObjectInfoTable& object_info_table)
+{
+    if ((wrapper != nullptr) && (wrapper->decoded_value != nullptr))
+    {
+        VkCuLaunchInfoNVX* value = wrapper->decoded_value;
+
+        value->function = handle_mapping::MapHandle<CuFunctionNVXInfo>(wrapper->function, object_info_table, &VulkanObjectInfoTable::GetCuFunctionNVXInfo);
+    }
+}
+
 void MapStructHandles(Decoded_VkImageViewHandleInfoNVX* wrapper, const VulkanObjectInfoTable& object_info_table)
 {
     if ((wrapper != nullptr) && (wrapper->decoded_value != nullptr))

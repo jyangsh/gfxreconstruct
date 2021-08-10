@@ -426,6 +426,10 @@ void EncodeStruct(ParameterEncoder* encoder, const VkPhysicalDeviceTransformFeed
 void EncodeStruct(ParameterEncoder* encoder, const VkPhysicalDeviceTransformFeedbackPropertiesEXT& value);
 void EncodeStruct(ParameterEncoder* encoder, const VkPipelineRasterizationStateStreamCreateInfoEXT& value);
 
+void EncodeStruct(ParameterEncoder* encoder, const VkCuModuleCreateInfoNVX& value);
+void EncodeStruct(ParameterEncoder* encoder, const VkCuFunctionCreateInfoNVX& value);
+void EncodeStruct(ParameterEncoder* encoder, const VkCuLaunchInfoNVX& value);
+
 void EncodeStruct(ParameterEncoder* encoder, const VkImageViewHandleInfoNVX& value);
 void EncodeStruct(ParameterEncoder* encoder, const VkImageViewAddressPropertiesNVX& value);
 

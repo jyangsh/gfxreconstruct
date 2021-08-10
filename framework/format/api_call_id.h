@@ -541,6 +541,11 @@ enum ApiCallId : uint32_t
     ApiCall_vkWaitForPresentKHR                                                                   = MakeApiCallId(ApiFamily_Vulkan, 0x1244),
     ApiCall_vkCmdBindInvocationMaskHUAWEI                                                         = MakeApiCallId(ApiFamily_Vulkan, 0x1245),
     ApiCall_vkGetMemoryRemoteAddressNV                                                            = MakeApiCallId(ApiFamily_Vulkan, 0x1246),
+    ApiCall_vkCreateCuModuleNVX                                                                   = MakeApiCallId(ApiFamily_Vulkan, 0x1247),
+    ApiCall_vkCreateCuFunctionNVX                                                                 = MakeApiCallId(ApiFamily_Vulkan, 0x1248),
+    ApiCall_vkDestroyCuModuleNVX                                                                  = MakeApiCallId(ApiFamily_Vulkan, 0x1249),
+    ApiCall_vkDestroyCuFunctionNVX                                                                = MakeApiCallId(ApiFamily_Vulkan, 0x124a),
+    ApiCall_vkCmdCuLaunchKernelNVX                                                                = MakeApiCallId(ApiFamily_Vulkan, 0x124b),
 
     ApiCall_VulkanLast
     // clang-format on

@@ -3598,6 +3598,39 @@ struct Decoded_VkPipelineRasterizationStateStreamCreateInfoEXT
     PNextNode* pNext{ nullptr };
 };
 
+struct Decoded_VkCuModuleCreateInfoNVX
+{
+    using struct_type = VkCuModuleCreateInfoNVX;
+
+    VkCuModuleCreateInfoNVX* decoded_value{ nullptr };
+
+    PNextNode* pNext{ nullptr };
+    uint64_t pData{ 0 };
+};
+
+struct Decoded_VkCuFunctionCreateInfoNVX
+{
+    using struct_type = VkCuFunctionCreateInfoNVX;
+
+    VkCuFunctionCreateInfoNVX* decoded_value{ nullptr };
+
+    PNextNode* pNext{ nullptr };
+    format::HandleId module{ format::kNullHandleId };
+    StringDecoder pName;
+};
+
+struct Decoded_VkCuLaunchInfoNVX
+{
+    using struct_type = VkCuLaunchInfoNVX;
+
+    VkCuLaunchInfoNVX* decoded_value{ nullptr };
+
+    PNextNode* pNext{ nullptr };
+    format::HandleId function{ format::kNullHandleId };
+    PointerDecoder<uint8_t> pParams;
+    PointerDecoder<uint8_t> pExtras;
+};
+
 struct Decoded_VkImageViewHandleInfoNVX
 {
     using struct_type = VkImageViewHandleInfoNVX;

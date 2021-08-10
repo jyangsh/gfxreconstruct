@@ -388,6 +388,12 @@ struct ValidationCacheEXTInfo : public VulkanObjectInfo<VkValidationCacheEXT>
     std::unordered_map<uint32_t, size_t> array_counts;
 };
 
+struct CuModuleNVXInfo : public VulkanObjectInfo<VkCuModuleNVX>
+{};
+
+struct CuFunctionNVXInfo : public VulkanObjectInfo<VkCuFunctionNVX>
+{};
+
 //
 // Handle alias types for extension handle types that have been promoted to core types.
 //

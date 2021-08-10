@@ -4342,6 +4342,82 @@ void VulkanReplayConsumer::Process_vkCmdDrawIndirectByteCountEXT(
     GetDeviceTable(in_commandBuffer)->CmdDrawIndirectByteCountEXT(in_commandBuffer, instanceCount, firstInstance, in_counterBuffer, counterBufferOffset, counterOffset, vertexStride);
 }
 
+void VulkanReplayConsumer::Process_vkCreateCuModuleNVX(
+    VkResult                                    returnValue,
+    format::HandleId                            device,
+    StructPointerDecoder<Decoded_VkCuModuleCreateInfoNVX>* pCreateInfo,
+    StructPointerDecoder<Decoded_VkAllocationCallbacks>* pAllocator,
+    HandlePointerDecoder<VkCuModuleNVX>*        pModule)
+{
+    VkDevice in_device = MapHandle<DeviceInfo>(device, &VulkanObjectInfoTable::GetDeviceInfo);
+    const VkCuModuleCreateInfoNVX* in_pCreateInfo = pCreateInfo->GetPointer();
+    const VkAllocationCallbacks* in_pAllocator = GetAllocationCallbacks(pAllocator);
+    if (!pModule->IsNull()) { pModule->SetHandleLength(1); }
+    VkCuModuleNVX* out_pModule = pModule->GetHandlePointer();
+
+    VkResult replay_result = GetDeviceTable(in_device)->CreateCuModuleNVX(in_device, in_pCreateInfo, in_pAllocator, out_pModule);
+    CheckResult("vkCreateCuModuleNVX", returnValue, replay_result);
+
+    AddHandle<CuModuleNVXInfo>(device, pModule->GetPointer(), out_pModule, &VulkanObjectInfoTable::AddCuModuleNVXInfo);
+}
+
+void VulkanReplayConsumer::Process_vkCreateCuFunctionNVX(
+    VkResult                                    returnValue,
+    format::HandleId                            device,
+    StructPointerDecoder<Decoded_VkCuFunctionCreateInfoNVX>* pCreateInfo,
+    StructPointerDecoder<Decoded_VkAllocationCallbacks>* pAllocator,
+    HandlePointerDecoder<VkCuFunctionNVX>*      pFunction)
+{
+    VkDevice in_device = MapHandle<DeviceInfo>(device, &VulkanObjectInfoTable::GetDeviceInfo);
+    const VkCuFunctionCreateInfoNVX* in_pCreateInfo = pCreateInfo->GetPointer();
+    MapStructHandles(pCreateInfo->GetMetaStructPointer(), GetObjectInfoTable());
+    const VkAllocationCallbacks* in_pAllocator = GetAllocationCallbacks(pAllocator);
+    if (!pFunction->IsNull()) { pFunction->SetHandleLength(1); }
+    VkCuFunctionNVX* out_pFunction = pFunction->GetHandlePointer();
+
+    VkResult replay_result = GetDeviceTable(in_device)->CreateCuFunctionNVX(in_device, in_pCreateInfo, in_pAllocator, out_pFunction);
+    CheckResult("vkCreateCuFunctionNVX", returnValue, replay_result);
+
+    AddHandle<CuFunctionNVXInfo>(device, pFunction->GetPointer(), out_pFunction, &VulkanObjectInfoTable::AddCuFunctionNVXInfo);
+}
+
+void VulkanReplayConsumer::Process_vkDestroyCuModuleNVX(
+    format::HandleId                            device,
+    format::HandleId                            module,
+    StructPointerDecoder<Decoded_VkAllocationCallbacks>* pAllocator)
+{
+    VkDevice in_device = MapHandle<DeviceInfo>(device, &VulkanObjectInfoTable::GetDeviceInfo);
+    VkCuModuleNVX in_module = MapHandle<CuModuleNVXInfo>(module, &VulkanObjectInfoTable::GetCuModuleNVXInfo);
+    const VkAllocationCallbacks* in_pAllocator = GetAllocationCallbacks(pAllocator);
+
+    GetDeviceTable(in_device)->DestroyCuModuleNVX(in_device, in_module, in_pAllocator);
+    RemoveHandle(module, &VulkanObjectInfoTable::RemoveCuModuleNVXInfo);
+}
+
+void VulkanReplayConsumer::Process_vkDestroyCuFunctionNVX(
+    format::HandleId                            device,
+    format::HandleId                            function,
+    StructPointerDecoder<Decoded_VkAllocationCallbacks>* pAllocator)
+{
+    VkDevice in_device = MapHandle<DeviceInfo>(device, &VulkanObjectInfoTable::GetDeviceInfo);
+    VkCuFunctionNVX in_function = MapHandle<CuFunctionNVXInfo>(function, &VulkanObjectInfoTable::GetCuFunctionNVXInfo);
+    const VkAllocationCallbacks* in_pAllocator = GetAllocationCallbacks(pAllocator);
+
+    GetDeviceTable(in_device)->DestroyCuFunctionNVX(in_device, in_function, in_pAllocator);
+    RemoveHandle(function, &VulkanObjectInfoTable::RemoveCuFunctionNVXInfo);
+}
+
+void VulkanReplayConsumer::Process_vkCmdCuLaunchKernelNVX(
+    format::HandleId                            commandBuffer,
+    StructPointerDecoder<Decoded_VkCuLaunchInfoNVX>* pLaunchInfo)
+{
+    VkCommandBuffer in_commandBuffer = MapHandle<CommandBufferInfo>(commandBuffer, &VulkanObjectInfoTable::GetCommandBufferInfo);
+    const VkCuLaunchInfoNVX* in_pLaunchInfo = pLaunchInfo->GetPointer();
+    MapStructHandles(pLaunchInfo->GetMetaStructPointer(), GetObjectInfoTable());
+
+    GetDeviceTable(in_commandBuffer)->CmdCuLaunchKernelNVX(in_commandBuffer, in_pLaunchInfo);
+}
+
 void VulkanReplayConsumer::Process_vkGetImageViewHandleNVX(
     uint32_t                                    returnValue,
     format::HandleId                            device,

@@ -392,6 +392,16 @@ struct AccelerationStructureNVWrapper : public HandleWrapper<VkAccelerationStruc
     // TODO: Determine what additional state tracking is needed.
 };
 
+struct CuModuleNVXWrapper : public HandleWrapper<VkCuModuleNVX>
+{
+    // TODO: Determine what additional state tracking is needed.
+};
+
+struct CuFunctionNVXWrapper : public HandleWrapper<VkCuFunctionNVX>
+{
+    // TODO: Determine what additional state tracking is needed.
+};
+
 // Handle alias types for extension handle types that have been promoted to core types.
 typedef SamplerYcbcrConversionWrapper   SamplerYcbcrConversionKHRWrapper;
 typedef DescriptorUpdateTemplateWrapper DescriptorUpdateTemplateKHRWrapper;

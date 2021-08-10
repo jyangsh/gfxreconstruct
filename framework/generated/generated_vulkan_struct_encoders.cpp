@@ -3438,6 +3438,40 @@ void EncodeStruct(ParameterEncoder* encoder, const VkPipelineRasterizationStateS
     encoder->EncodeUInt32Value(value.rasterizationStream);
 }
 
+void EncodeStruct(ParameterEncoder* encoder, const VkCuModuleCreateInfoNVX& value)
+{
+    encoder->EncodeEnumValue(value.sType);
+    EncodePNextStruct(encoder, value.pNext);
+    encoder->EncodeSizeTValue(value.dataSize);
+    encoder->EncodeVoidPtr(value.pData);
+}
+
+void EncodeStruct(ParameterEncoder* encoder, const VkCuFunctionCreateInfoNVX& value)
+{
+    encoder->EncodeEnumValue(value.sType);
+    EncodePNextStruct(encoder, value.pNext);
+    encoder->EncodeHandleValue(value.module);
+    encoder->EncodeString(value.pName);
+}
+
+void EncodeStruct(ParameterEncoder* encoder, const VkCuLaunchInfoNVX& value)
+{
+    encoder->EncodeEnumValue(value.sType);
+    EncodePNextStruct(encoder, value.pNext);
+    encoder->EncodeHandleValue(value.function);
+    encoder->EncodeUInt32Value(value.gridDimX);
+    encoder->EncodeUInt32Value(value.gridDimY);
+    encoder->EncodeUInt32Value(value.gridDimZ);
+    encoder->EncodeUInt32Value(value.blockDimX);
+    encoder->EncodeUInt32Value(value.blockDimY);
+    encoder->EncodeUInt32Value(value.blockDimZ);
+    encoder->EncodeUInt32Value(value.sharedMemBytes);
+    encoder->EncodeSizeTValue(value.paramCount);
+    encoder->EncodeVoidArray2D(value.pParams, ArraySize2D<VkStructureType, const void*, VkCuFunctionNVX, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, size_t, const void* const *, size_t, const void* const *>(sType, pNext, function, gridDimX, gridDimY, gridDimZ, blockDimX, blockDimY, blockDimZ, sharedMemBytes, paramCount, pParams, extraCount, pExtras));
+    encoder->EncodeSizeTValue(value.extraCount);
+    encoder->EncodeVoidArray2D(value.pExtras, ArraySize2D<VkStructureType, const void*, VkCuFunctionNVX, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, size_t, const void* const *, size_t, const void* const *>(sType, pNext, function, gridDimX, gridDimY, gridDimZ, blockDimX, blockDimY, blockDimZ, sharedMemBytes, paramCount, pParams, extraCount, pExtras));
+}
+
 void EncodeStruct(ParameterEncoder* encoder, const VkImageViewHandleInfoNVX& value)
 {
     encoder->EncodeEnumValue(value.sType);

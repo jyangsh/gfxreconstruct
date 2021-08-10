@@ -147,6 +147,8 @@ void TrackCmdEndQueryIndexedEXTHandles(CommandBufferWrapper* wrapper, VkQueryPoo
 
 void TrackCmdDrawIndirectByteCountEXTHandles(CommandBufferWrapper* wrapper, VkBuffer counterBuffer);
 
+void TrackCmdCuLaunchKernelNVXHandles(CommandBufferWrapper* wrapper, const VkCuLaunchInfoNVX* pLaunchInfo);
+
 void TrackCmdDrawIndirectCountAMDHandles(CommandBufferWrapper* wrapper, VkBuffer buffer, VkBuffer countBuffer);
 
 void TrackCmdDrawIndexedIndirectCountAMDHandles(CommandBufferWrapper* wrapper, VkBuffer buffer, VkBuffer countBuffer);

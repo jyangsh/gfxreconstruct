@@ -6682,6 +6682,112 @@ size_t VulkanDecoder::Decode_vkCmdDrawIndirectByteCountEXT(const uint8_t* parame
     return bytes_read;
 }
 
+size_t VulkanDecoder::Decode_vkCreateCuModuleNVX(const uint8_t* parameter_buffer, size_t buffer_size)
+{
+    size_t bytes_read = 0;
+
+    format::HandleId device;
+    StructPointerDecoder<Decoded_VkCuModuleCreateInfoNVX> pCreateInfo;
+    StructPointerDecoder<Decoded_VkAllocationCallbacks> pAllocator;
+    HandlePointerDecoder<VkCuModuleNVX> pModule;
+    VkResult return_value;
+
+    bytes_read += ValueDecoder::DecodeHandleIdValue((parameter_buffer + bytes_read), (buffer_size - bytes_read), &device);
+    bytes_read += pCreateInfo.Decode((parameter_buffer + bytes_read), (buffer_size - bytes_read));
+    bytes_read += pAllocator.Decode((parameter_buffer + bytes_read), (buffer_size - bytes_read));
+    bytes_read += pModule.Decode((parameter_buffer + bytes_read), (buffer_size - bytes_read));
+    bytes_read += ValueDecoder::DecodeEnumValue((parameter_buffer + bytes_read), (buffer_size - bytes_read), &return_value);
+
+    for (auto consumer : GetConsumers())
+    {
+        consumer->Process_vkCreateCuModuleNVX(return_value, device, &pCreateInfo, &pAllocator, &pModule);
+    }
+
+    return bytes_read;
+}
+
+size_t VulkanDecoder::Decode_vkCreateCuFunctionNVX(const uint8_t* parameter_buffer, size_t buffer_size)
+{
+    size_t bytes_read = 0;
+
+    format::HandleId device;
+    StructPointerDecoder<Decoded_VkCuFunctionCreateInfoNVX> pCreateInfo;
+    StructPointerDecoder<Decoded_VkAllocationCallbacks> pAllocator;
+    HandlePointerDecoder<VkCuFunctionNVX> pFunction;
+    VkResult return_value;
+
+    bytes_read += ValueDecoder::DecodeHandleIdValue((parameter_buffer + bytes_read), (buffer_size - bytes_read), &device);
+    bytes_read += pCreateInfo.Decode((parameter_buffer + bytes_read), (buffer_size - bytes_read));
+    bytes_read += pAllocator.Decode((parameter_buffer + bytes_read), (buffer_size - bytes_read));
+    bytes_read += pFunction.Decode((parameter_buffer + bytes_read), (buffer_size - bytes_read));
+    bytes_read += ValueDecoder::DecodeEnumValue((parameter_buffer + bytes_read), (buffer_size - bytes_read), &return_value);
+
+    for (auto consumer : GetConsumers())
+    {
+        consumer->Process_vkCreateCuFunctionNVX(return_value, device, &pCreateInfo, &pAllocator, &pFunction);
+    }
+
+    return bytes_read;
+}
+
+size_t VulkanDecoder::Decode_vkDestroyCuModuleNVX(const uint8_t* parameter_buffer, size_t buffer_size)
+{
+    size_t bytes_read = 0;
+
+    format::HandleId device;
+    format::HandleId module;
+    StructPointerDecoder<Decoded_VkAllocationCallbacks> pAllocator;
+
+    bytes_read += ValueDecoder::DecodeHandleIdValue((parameter_buffer + bytes_read), (buffer_size - bytes_read), &device);
+    bytes_read += ValueDecoder::DecodeHandleIdValue((parameter_buffer + bytes_read), (buffer_size - bytes_read), &module);
+    bytes_read += pAllocator.Decode((parameter_buffer + bytes_read), (buffer_size - bytes_read));
+
+    for (auto consumer : GetConsumers())
+    {
+        consumer->Process_vkDestroyCuModuleNVX(device, module, &pAllocator);
+    }
+
+    return bytes_read;
+}
+
+size_t VulkanDecoder::Decode_vkDestroyCuFunctionNVX(const uint8_t* parameter_buffer, size_t buffer_size)
+{
+    size_t bytes_read = 0;
+
+    format::HandleId device;
+    format::HandleId function;
+    StructPointerDecoder<Decoded_VkAllocationCallbacks> pAllocator;
+
+    bytes_read += ValueDecoder::DecodeHandleIdValue((parameter_buffer + bytes_read), (buffer_size - bytes_read), &device);
+    bytes_read += ValueDecoder::DecodeHandleIdValue((parameter_buffer + bytes_read), (buffer_size - bytes_read), &function);
+    bytes_read += pAllocator.Decode((parameter_buffer + bytes_read), (buffer_size - bytes_read));
+
+    for (auto consumer : GetConsumers())
+    {
+        consumer->Process_vkDestroyCuFunctionNVX(device, function, &pAllocator);
+    }
+
+    return bytes_read;
+}
+
+size_t VulkanDecoder::Decode_vkCmdCuLaunchKernelNVX(const uint8_t* parameter_buffer, size_t buffer_size)
+{
+    size_t bytes_read = 0;
+
+    format::HandleId commandBuffer;
+    StructPointerDecoder<Decoded_VkCuLaunchInfoNVX> pLaunchInfo;
+
+    bytes_read += ValueDecoder::DecodeHandleIdValue((parameter_buffer + bytes_read), (buffer_size - bytes_read), &commandBuffer);
+    bytes_read += pLaunchInfo.Decode((parameter_buffer + bytes_read), (buffer_size - bytes_read));
+
+    for (auto consumer : GetConsumers())
+    {
+        consumer->Process_vkCmdCuLaunchKernelNVX(commandBuffer, &pLaunchInfo);
+    }
+
+    return bytes_read;
+}
+
 size_t VulkanDecoder::Decode_vkGetImageViewHandleNVX(const uint8_t* parameter_buffer, size_t buffer_size)
 {
     size_t bytes_read = 0;
@@ -11166,6 +11272,21 @@ void VulkanDecoder::DecodeFunctionCall(format::ApiCallId             call_id,
         break;
     case format::ApiCallId::ApiCall_vkCmdDrawIndirectByteCountEXT:
         Decode_vkCmdDrawIndirectByteCountEXT(parameter_buffer, buffer_size);
+        break;
+    case format::ApiCallId::ApiCall_vkCreateCuModuleNVX:
+        Decode_vkCreateCuModuleNVX(parameter_buffer, buffer_size);
+        break;
+    case format::ApiCallId::ApiCall_vkCreateCuFunctionNVX:
+        Decode_vkCreateCuFunctionNVX(parameter_buffer, buffer_size);
+        break;
+    case format::ApiCallId::ApiCall_vkDestroyCuModuleNVX:
+        Decode_vkDestroyCuModuleNVX(parameter_buffer, buffer_size);
+        break;
+    case format::ApiCallId::ApiCall_vkDestroyCuFunctionNVX:
+        Decode_vkDestroyCuFunctionNVX(parameter_buffer, buffer_size);
+        break;
+    case format::ApiCallId::ApiCall_vkCmdCuLaunchKernelNVX:
+        Decode_vkCmdCuLaunchKernelNVX(parameter_buffer, buffer_size);
         break;
     case format::ApiCallId::ApiCall_vkGetImageViewHandleNVX:
         Decode_vkGetImageViewHandleNVX(parameter_buffer, buffer_size);

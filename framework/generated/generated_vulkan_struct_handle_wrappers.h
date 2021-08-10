@@ -217,6 +217,10 @@ void UnwrapStructHandles(VkDebugMarkerObjectTagInfoEXT* value, HandleUnwrapMemor
 
 void UnwrapStructHandles(VkDedicatedAllocationMemoryAllocateInfoNV* value, HandleUnwrapMemory* unwrap_memory);
 
+void UnwrapStructHandles(VkCuFunctionCreateInfoNVX* value, HandleUnwrapMemory* unwrap_memory);
+
+void UnwrapStructHandles(VkCuLaunchInfoNVX* value, HandleUnwrapMemory* unwrap_memory);
+
 void UnwrapStructHandles(VkImageViewHandleInfoNVX* value, HandleUnwrapMemory* unwrap_memory);
 
 void UnwrapStructHandles(VkWin32KeyedMutexAcquireReleaseInfoNV* value, HandleUnwrapMemory* unwrap_memory);

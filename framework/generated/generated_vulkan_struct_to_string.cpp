@@ -5072,6 +5072,55 @@ template <> std::string ToString<VkPipelineRasterizationStateStreamCreateInfoEXT
     );
 }
 
+template <> std::string ToString<VkCuModuleCreateInfoNVX>(const VkCuModuleCreateInfoNVX& obj, ToStringFlags toStringFlags, uint32_t tabCount, uint32_t tabSize)
+{
+    return ObjectToString(toStringFlags, tabCount, tabSize,
+        [&](std::stringstream& strStrm)
+        {
+            FieldToString(strStrm, true, "sType", toStringFlags, tabCount, tabSize, '"' + ToString(obj.sType, toStringFlags, tabCount, tabSize) + '"');
+            FieldToString(strStrm, false, "pNext", toStringFlags, tabCount, tabSize, PNextToString(obj.pNext, toStringFlags, tabCount, tabSize));
+            FieldToString(strStrm, false, "dataSize", toStringFlags, tabCount, tabSize, ToString(obj.dataSize, toStringFlags, tabCount, tabSize));
+            FieldToString(strStrm, false, "pData", toStringFlags, tabCount, tabSize, "\"" + PtrToString(obj.pData) + "\"");
+        }
+    );
+}
+
+template <> std::string ToString<VkCuFunctionCreateInfoNVX>(const VkCuFunctionCreateInfoNVX& obj, ToStringFlags toStringFlags, uint32_t tabCount, uint32_t tabSize)
+{
+    return ObjectToString(toStringFlags, tabCount, tabSize,
+        [&](std::stringstream& strStrm)
+        {
+            FieldToString(strStrm, true, "sType", toStringFlags, tabCount, tabSize, '"' + ToString(obj.sType, toStringFlags, tabCount, tabSize) + '"');
+            FieldToString(strStrm, false, "pNext", toStringFlags, tabCount, tabSize, PNextToString(obj.pNext, toStringFlags, tabCount, tabSize));
+            FieldToString(strStrm, false, "module", toStringFlags, tabCount, tabSize, '"' + VkHandleToString(obj.module) + '"');
+            FieldToString(strStrm, false, "pName", toStringFlags, tabCount, tabSize, (obj.pName ? ("\"" + std::string(obj.pName) + "\"") : "null"));
+        }
+    );
+}
+
+template <> std::string ToString<VkCuLaunchInfoNVX>(const VkCuLaunchInfoNVX& obj, ToStringFlags toStringFlags, uint32_t tabCount, uint32_t tabSize)
+{
+    return ObjectToString(toStringFlags, tabCount, tabSize,
+        [&](std::stringstream& strStrm)
+        {
+            FieldToString(strStrm, true, "sType", toStringFlags, tabCount, tabSize, '"' + ToString(obj.sType, toStringFlags, tabCount, tabSize) + '"');
+            FieldToString(strStrm, false, "pNext", toStringFlags, tabCount, tabSize, PNextToString(obj.pNext, toStringFlags, tabCount, tabSize));
+            FieldToString(strStrm, false, "function", toStringFlags, tabCount, tabSize, '"' + VkHandleToString(obj.function) + '"');
+            FieldToString(strStrm, false, "gridDimX", toStringFlags, tabCount, tabSize, ToString(obj.gridDimX, toStringFlags, tabCount, tabSize));
+            FieldToString(strStrm, false, "gridDimY", toStringFlags, tabCount, tabSize, ToString(obj.gridDimY, toStringFlags, tabCount, tabSize));
+            FieldToString(strStrm, false, "gridDimZ", toStringFlags, tabCount, tabSize, ToString(obj.gridDimZ, toStringFlags, tabCount, tabSize));
+            FieldToString(strStrm, false, "blockDimX", toStringFlags, tabCount, tabSize, ToString(obj.blockDimX, toStringFlags, tabCount, tabSize));
+            FieldToString(strStrm, false, "blockDimY", toStringFlags, tabCount, tabSize, ToString(obj.blockDimY, toStringFlags, tabCount, tabSize));
+            FieldToString(strStrm, false, "blockDimZ", toStringFlags, tabCount, tabSize, ToString(obj.blockDimZ, toStringFlags, tabCount, tabSize));
+            FieldToString(strStrm, false, "sharedMemBytes", toStringFlags, tabCount, tabSize, ToString(obj.sharedMemBytes, toStringFlags, tabCount, tabSize));
+            FieldToString(strStrm, false, "paramCount", toStringFlags, tabCount, tabSize, ToString(obj.paramCount, toStringFlags, tabCount, tabSize));
+            FieldToString(strStrm, false, "pParams", toStringFlags, tabCount, tabSize, "\"" + PtrToString(obj.pParams) + "\"");
+            FieldToString(strStrm, false, "extraCount", toStringFlags, tabCount, tabSize, ToString(obj.extraCount, toStringFlags, tabCount, tabSize));
+            FieldToString(strStrm, false, "pExtras", toStringFlags, tabCount, tabSize, "\"" + PtrToString(obj.pExtras) + "\"");
+        }
+    );
+}
+
 template <> std::string ToString<VkImageViewHandleInfoNVX>(const VkImageViewHandleInfoNVX& obj, ToStringFlags toStringFlags, uint32_t tabCount, uint32_t tabSize)
 {
     return ObjectToString(toStringFlags, tabCount, tabSize,

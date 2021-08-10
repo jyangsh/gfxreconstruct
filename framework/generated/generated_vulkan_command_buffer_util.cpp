@@ -744,6 +744,16 @@ void TrackCmdDrawIndirectByteCountEXTHandles(CommandBufferWrapper* wrapper, VkBu
     wrapper->command_handles[CommandHandleType::BufferHandle].insert(GetWrappedId(counterBuffer));
 }
 
+void TrackCmdCuLaunchKernelNVXHandles(CommandBufferWrapper* wrapper, const VkCuLaunchInfoNVX* pLaunchInfo)
+{
+    assert(wrapper != nullptr);
+
+    if (pLaunchInfo != nullptr)
+    {
+        wrapper->command_handles[CommandHandleType::CuFunctionNVXHandle].insert(GetWrappedId(pLaunchInfo->function));
+    }
+}
+
 void TrackCmdDrawIndirectCountAMDHandles(CommandBufferWrapper* wrapper, VkBuffer buffer, VkBuffer countBuffer)
 {
     assert(wrapper != nullptr);
