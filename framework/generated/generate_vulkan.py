@@ -64,7 +64,8 @@ generate_targets = [
     'generated_vulkan_enum_to_string.cpp',
     'generated_vulkan_pnext_to_string.cpp',
     'generated_vulkan_struct_to_string.h',
-    'generated_vulkan_struct_to_string.cpp'
+    'generated_vulkan_struct_to_string.cpp',
+    'generated_vulkan_object_info_table_base2.h'
 ]
 
 if __name__ == '__main__':

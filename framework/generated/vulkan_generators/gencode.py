@@ -84,6 +84,8 @@ from vulkan_struct_to_string_body_generator import VulkanStructToStringBodyGener
 from vulkan_pnext_to_string_body_generator import VulkanPNextToStringBodyGenerator,VulkanPNextToStringBodyGeneratorOptions
 from vulkan_struct_to_string_header_generator import VulkanStructToStringHeaderGenerator,VulkanStructToStringHeaderGeneratorOptions
 
+from vulkan_object_info_table_base2_header_generator import VulkanObjectInfoTableBase2HeaderGenerator,VulkanObjectInfoTableBase2HeaderGeneratorOptions
+
 # Simple timer functions
 startTime = None
 
@@ -551,6 +553,18 @@ def makeGenOpts(args):
             platformTypes     = platformTypes,
             prefixText        = prefixStrings + vkPrefixStrings,
             protectFile       = False,
+            protectFeature    = False)
+        ]
+
+    genOpts['generated_vulkan_object_info_table_base2.h'] = [
+          VulkanObjectInfoTableBase2HeaderGenerator,
+          VulkanObjectInfoTableBase2HeaderGeneratorOptions(
+            filename          = 'generated_vulkan_object_info_table_base2.h',
+            directory         = directory,
+            blacklists        = blacklists,
+            platformTypes     = platformTypes,
+            prefixText        = prefixStrings + vkPrefixStrings,
+            protectFile       = True,
             protectFeature    = False)
         ]
 
