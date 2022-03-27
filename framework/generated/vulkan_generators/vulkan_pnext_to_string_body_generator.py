@@ -20,39 +20,60 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
-import os,re,sys,inspect
+import os, re, sys, inspect
 from base_generator import *
+
 
 class VulkanPNextToStringBodyGeneratorOptions(BaseGeneratorOptions):
     """Options for generating C++ functions for Vulkan ToString() functions"""
-    def __init__(self,
-                 blacklists = None,         # Path to JSON file listing apicalls and structs to ignore.
-                 platformTypes = None,      # Path to JSON file listing platform (WIN32, X11, etc.) defined types.
-                 filename = None,
-                 directory = '.',
-                 prefixText = '',
-                 protectFile = False,
-                 protectFeature = True):
-        BaseGeneratorOptions.__init__(self, blacklists, platformTypes,
-                                      filename, directory, prefixText,
-                                      protectFile, protectFeature)
+
+    def __init__(
+        self,
+        blacklists=None,  # Path to JSON file listing apicalls and structs to ignore.
+        platformTypes=None,  # Path to JSON file listing platform (WIN32, X11, etc.) defined types.
+        filename=None,
+        directory='.',
+        prefixText='',
+        protectFile=False,
+        protectFeature=True,
+        extraVulkanHeaders=[]
+    ):
+        BaseGeneratorOptions.__init__(
+            self,
+            blacklists,
+            platformTypes,
+            filename,
+            directory,
+            prefixText,
+            protectFile,
+            protectFeature,
+            extraVulkanHeaders=extraVulkanHeaders
+        )
+
 
 # VulkanPNextToStringBodyGenerator - subclass of BaseGenerator.
 # Generates C++ functions for stringifying Vulkan API structures.
 class VulkanPNextToStringBodyGenerator(BaseGenerator):
     """Generate C++ functions for Vulkan ToString() functions"""
-    def __init__(self,
-                 errFile = sys.stderr,
-                 warnFile = sys.stderr,
-                 diagFile = sys.stdout):
-        BaseGenerator.__init__(self,
-                               processCmds=False, processStructs=True, featureBreak=True,
-                               errFile=errFile, warnFile=warnFile, diagFile=diagFile)
+
+    def __init__(
+        self, err_file=sys.stderr, warn_file=sys.stderr, diag_file=sys.stdout
+    ):
+        BaseGenerator.__init__(
+            self,
+            process_cmds=False,
+            process_structs=True,
+            feature_break=True,
+            err_file=err_file,
+            warn_file=warn_file,
+            diag_file=diag_file
+        )
 
         # Map to store VkStructureType enum values
         self.sTypeValues = dict()
 
     # Method override
+    # yapf: disable
     def endFile(self):
         body = inspect.cleandoc('''
         #include "decode/custom_vulkan_to_string.h"
@@ -86,13 +107,14 @@ class VulkanPNextToStringBodyGenerator(BaseGenerator):
 
         # Finish processing in superclass
         BaseGenerator.endFile(self)
+    # yapf: enable
 
     # Method override
     def genStruct(self, typeinfo, typename, alias):
         if not alias:
             # Only process struct types that specify a 'structextends' tag, which indicates the struct can be used in a pNext chain.
             if typeinfo.elem.get('structextends'):
-                sType = self.makeStructureTypeEnum(typeinfo, typename)
+                sType = self.make_structure_type_enum(typeinfo, typename)
                 if sType:
                     self.sTypeValues[typename] = sType
 

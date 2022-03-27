@@ -37,6 +37,7 @@ GFXRECON_BEGIN_NAMESPACE(decode)
 
 struct ApiCallInfo
 {
+    uint64_t         index{ 0 };
     format::ThreadId thread_id{ 0 };
 };
 
@@ -46,6 +47,8 @@ class ApiDecoder
     virtual ~ApiDecoder() {}
 
     virtual bool SupportsApiCall(format::ApiCallId id) = 0;
+
+    virtual bool SupportsMetaDataId(format::MetaDataId meta_data_id) = 0;
 
     virtual void DecodeFunctionCall(format::ApiCallId  id,
                                     const ApiCallInfo& call_info,
@@ -104,7 +107,7 @@ class ApiDecoder
 
     virtual void DispatchSetOpaqueAddressCommand(format::ThreadId thread_id,
                                                  format::HandleId device_id,
-                                                 format::HandleId buffer_id,
+                                                 format::HandleId object_id,
                                                  uint64_t         address) = 0;
 
     virtual void DispatchSetRayTracingShaderGroupHandlesCommand(format::ThreadId thread_id,

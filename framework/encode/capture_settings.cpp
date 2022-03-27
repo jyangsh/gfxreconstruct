@@ -1,7 +1,7 @@
 /*
 ** Copyright (c) 2018-2020 Valve Corporation
 ** Copyright (c) 2018-2020 LunarG, Inc.
-** Copyright (c) 2019 Advanced Micro Devices, Inc. All rights reserved.
+** Copyright (c) 2019-2021 Advanced Micro Devices, Inc. All rights reserved.
 **
 ** Permission is hereby granted, free of charge, to any person obtaining a
 ** copy of this software and associated documentation files (the "Software"),
@@ -25,6 +25,7 @@
 #include "encode/capture_settings.h"
 
 #include "util/file_path.h"
+#include "util/options.h"
 #include "util/platform.h"
 #include "util/settings_loader.h"
 
@@ -72,10 +73,16 @@ GFXRECON_BEGIN_NAMESPACE(encode)
 #define LOG_OUTPUT_TO_OS_DEBUG_STRING_UPPER "LOG_OUTPUT_TO_OS_DEBUG_STRING"
 #define MEMORY_TRACKING_MODE_LOWER          "memory_tracking_mode"
 #define MEMORY_TRACKING_MODE_UPPER          "MEMORY_TRACKING_MODE"
+#define SCREENSHOT_DIR_LOWER                "screenshot_dir"
+#define SCREENSHOT_DIR_UPPER                "SCREENSHOT_DIR"
+#define SCREENSHOT_FRAMES_LOWER             "screenshot_frames"
+#define SCREENSHOT_FRAMES_UPPER             "SCREENSHOT_FRAMES"
 #define CAPTURE_FRAMES_LOWER                "capture_frames"
 #define CAPTURE_FRAMES_UPPER                "CAPTURE_FRAMES"
 #define CAPTURE_TRIGGER_LOWER               "capture_trigger"
 #define CAPTURE_TRIGGER_UPPER               "CAPTURE_TRIGGER"
+#define CAPTURE_TRIGGER_FRAMES_LOWER        "capture_trigger_frames"
+#define CAPTURE_TRIGGER_FRAMES_UPPER        "CAPTURE_TRIGGER_FRAMES"
 #define PAGE_GUARD_COPY_ON_MAP_LOWER        "page_guard_copy_on_map"
 #define PAGE_GUARD_COPY_ON_MAP_UPPER        "PAGE_GUARD_COPY_ON_MAP"
 #define PAGE_GUARD_SEPARATE_READ_LOWER      "page_guard_separate_read"
@@ -88,6 +95,10 @@ GFXRECON_BEGIN_NAMESPACE(encode)
 #define PAGE_GUARD_TRACK_AHB_MEMORY_UPPER   "PAGE_GUARD_TRACK_AHB_MEMORY"
 #define PAGE_GUARD_EXTERNAL_MEMORY_LOWER    "page_guard_external_memory"
 #define PAGE_GUARD_EXTERNAL_MEMORY_UPPER    "PAGE_GUARD_EXTERNAL_MEMORY"
+#define DEBUG_LAYER_LOWER                   "debug_layer"
+#define DEBUG_LAYER_UPPER                   "DEBUG_LAYER"
+#define DEBUG_DEVICE_LOST_LOWER             "debug_device_lost"
+#define DEBUG_DEVICE_LOST_UPPER             "DEBUG_DEVICE_LOST"
 // clang-format on
 
 #if defined(__ANDROID__)
@@ -112,14 +123,19 @@ const char kLogLevelEnvVar[]                  = GFXRECON_ENV_VAR_PREFIX LOG_LEVE
 const char kLogOutputToConsoleEnvVar[]        = GFXRECON_ENV_VAR_PREFIX LOG_OUTPUT_TO_CONSOLE_LOWER;
 const char kLogOutputToOsDebugStringEnvVar[]  = GFXRECON_ENV_VAR_PREFIX LOG_OUTPUT_TO_OS_DEBUG_STRING_LOWER;
 const char kMemoryTrackingModeEnvVar[]        = GFXRECON_ENV_VAR_PREFIX MEMORY_TRACKING_MODE_LOWER;
+const char kScreenshotDirEnvVar[]             = GFXRECON_ENV_VAR_PREFIX SCREENSHOT_DIR_LOWER;
+const char kScreenshotFramesEnvVar[]          = GFXRECON_ENV_VAR_PREFIX SCREENSHOT_FRAMES_LOWER;
 const char kCaptureFramesEnvVar[]             = GFXRECON_ENV_VAR_PREFIX CAPTURE_FRAMES_LOWER;
 const char kCaptureTriggerEnvVar[]            = GFXRECON_ENV_VAR_PREFIX CAPTURE_TRIGGER_LOWER;
+const char kCaptureTriggerFramesEnvVar[]      = GFXRECON_ENV_VAR_PREFIX CAPTURE_TRIGGER_FRAMES_LOWER;
 const char kPageGuardCopyOnMapEnvVar[]        = GFXRECON_ENV_VAR_PREFIX PAGE_GUARD_COPY_ON_MAP_LOWER;
 const char kPageGuardSeparateReadEnvVar[]     = GFXRECON_ENV_VAR_PREFIX PAGE_GUARD_SEPARATE_READ_LOWER;
 const char kPageGuardPersistentMemoryEnvVar[] = GFXRECON_ENV_VAR_PREFIX PAGE_GUARD_PERSISTENT_MEMORY_LOWER;
 const char kPageGuardAlignBufferSizesEnvVar[] = GFXRECON_ENV_VAR_PREFIX PAGE_GUARD_ALIGN_BUFFER_SIZES_LOWER;
 const char kPageGuardTrackAhbMemoryEnvVar[]   = GFXRECON_ENV_VAR_PREFIX PAGE_GUARD_TRACK_AHB_MEMORY_LOWER;
 const char kPageGuardExternalMemoryEnvVar[]   = GFXRECON_ENV_VAR_PREFIX PAGE_GUARD_EXTERNAL_MEMORY_LOWER;
+const char kDebugLayerEnvVar[]                = GFXRECON_ENV_VAR_PREFIX DEBUG_LAYER_LOWER;
+const char kDebugDeviceLostEnvVar[]           = GFXRECON_ENV_VAR_PREFIX DEBUG_DEVICE_LOST_LOWER;
 
 #else
 // Desktop environment settings
@@ -143,6 +159,8 @@ const char kLogLevelEnvVar[]                  = GFXRECON_ENV_VAR_PREFIX LOG_LEVE
 const char kLogOutputToConsoleEnvVar[]        = GFXRECON_ENV_VAR_PREFIX LOG_OUTPUT_TO_CONSOLE_UPPER;
 const char kLogOutputToOsDebugStringEnvVar[]  = GFXRECON_ENV_VAR_PREFIX LOG_OUTPUT_TO_OS_DEBUG_STRING_UPPER;
 const char kMemoryTrackingModeEnvVar[]        = GFXRECON_ENV_VAR_PREFIX MEMORY_TRACKING_MODE_UPPER;
+const char kScreenshotDirEnvVar[]             = GFXRECON_ENV_VAR_PREFIX SCREENSHOT_DIR_UPPER;
+const char kScreenshotFramesEnvVar[]          = GFXRECON_ENV_VAR_PREFIX SCREENSHOT_FRAMES_UPPER;
 const char kCaptureFramesEnvVar[]             = GFXRECON_ENV_VAR_PREFIX CAPTURE_FRAMES_UPPER;
 const char kPageGuardCopyOnMapEnvVar[]        = GFXRECON_ENV_VAR_PREFIX PAGE_GUARD_COPY_ON_MAP_UPPER;
 const char kPageGuardSeparateReadEnvVar[]     = GFXRECON_ENV_VAR_PREFIX PAGE_GUARD_SEPARATE_READ_UPPER;
@@ -151,6 +169,9 @@ const char kPageGuardAlignBufferSizesEnvVar[] = GFXRECON_ENV_VAR_PREFIX PAGE_GUA
 const char kPageGuardTrackAhbMemoryEnvVar[]   = GFXRECON_ENV_VAR_PREFIX PAGE_GUARD_TRACK_AHB_MEMORY_UPPER;
 const char kPageGuardExternalMemoryEnvVar[]   = GFXRECON_ENV_VAR_PREFIX PAGE_GUARD_EXTERNAL_MEMORY_UPPER;
 const char kCaptureTriggerEnvVar[]            = GFXRECON_ENV_VAR_PREFIX CAPTURE_TRIGGER_UPPER;
+const char kCaptureTriggerFramesEnvVar[]      = GFXRECON_ENV_VAR_PREFIX CAPTURE_TRIGGER_FRAMES_UPPER;
+const char kDebugLayerEnvVar[]                = GFXRECON_ENV_VAR_PREFIX DEBUG_LAYER_UPPER;
+const char kDebugDeviceLostEnvVar[]           = GFXRECON_ENV_VAR_PREFIX DEBUG_DEVICE_LOST_UPPER;
 #endif
 
 // Capture options for settings file.
@@ -173,14 +194,19 @@ const std::string kOptionKeyLogLevel                  = std::string(kSettingsFil
 const std::string kOptionKeyLogOutputToConsole        = std::string(kSettingsFilter) + std::string(LOG_OUTPUT_TO_CONSOLE_LOWER);
 const std::string kOptionKeyLogOutputToOsDebugString  = std::string(kSettingsFilter) + std::string(LOG_OUTPUT_TO_OS_DEBUG_STRING_LOWER);
 const std::string kOptionKeyMemoryTrackingMode        = std::string(kSettingsFilter) + std::string(MEMORY_TRACKING_MODE_LOWER);
+const std::string kOptionKeyScreenshotDir             = std::string(kSettingsFilter) + std::string(SCREENSHOT_DIR_LOWER);
+const std::string kOptionKeyScreenshotFrames          = std::string(kSettingsFilter) + std::string(SCREENSHOT_FRAMES_LOWER);
 const std::string kOptionKeyCaptureFrames             = std::string(kSettingsFilter) + std::string(CAPTURE_FRAMES_LOWER);
 const std::string kOptionKeyCaptureTrigger            = std::string(kSettingsFilter) + std::string(CAPTURE_TRIGGER_LOWER);
+const std::string kOptionKeyCaptureTriggerFrames      = std::string(kSettingsFilter) + std::string(CAPTURE_TRIGGER_FRAMES_LOWER);
 const std::string kOptionKeyPageGuardCopyOnMap        = std::string(kSettingsFilter) + std::string(PAGE_GUARD_COPY_ON_MAP_LOWER);
 const std::string kOptionKeyPageGuardSeparateRead     = std::string(kSettingsFilter) + std::string(PAGE_GUARD_SEPARATE_READ_LOWER);
 const std::string kOptionKeyPageGuardPersistentMemory = std::string(kSettingsFilter) + std::string(PAGE_GUARD_PERSISTENT_MEMORY_LOWER);
 const std::string kOptionKeyPageGuardAlignBufferSizes = std::string(kSettingsFilter) + std::string(PAGE_GUARD_ALIGN_BUFFER_SIZES_LOWER);
 const std::string kOptionKeyPageGuardTrackAhbMemory   = std::string(kSettingsFilter) + std::string(PAGE_GUARD_TRACK_AHB_MEMORY_LOWER);
 const std::string kOptionKeyPageGuardExternalMemory   = std::string(kSettingsFilter) + std::string(PAGE_GUARD_EXTERNAL_MEMORY_LOWER);
+const std::string kDebugLayer                         = std::string(kSettingsFilter) + std::string(DEBUG_LAYER_LOWER);
+const std::string kDebugDeviceLost                    = std::string(kSettingsFilter) + std::string(DEBUG_DEVICE_LOST_LOWER);
 
 #if defined(ENABLE_LZ4_COMPRESSION)
 const format::CompressionType kDefaultCompressionType = format::CompressionType::kLz4;
@@ -189,7 +215,11 @@ const format::CompressionType kDefaultCompressionType = format::CompressionType:
 #endif
 // clang-format on
 
-CaptureSettings::CaptureSettings() {}
+CaptureSettings::CaptureSettings(const TraceSettings& trace_settings)
+{
+    trace_settings_ = trace_settings;
+    log_settings_   = {};
+}
 
 CaptureSettings::~CaptureSettings() {}
 
@@ -272,6 +302,7 @@ void CaptureSettings::LoadOptionsEnvVar(OptionsMap* options)
     // Trimming environment variables
     LoadSingleOptionEnvVar(options, kCaptureFramesEnvVar, kOptionKeyCaptureFrames);
     LoadSingleOptionEnvVar(options, kCaptureTriggerEnvVar, kOptionKeyCaptureTrigger);
+    LoadSingleOptionEnvVar(options, kCaptureTriggerFramesEnvVar, kOptionKeyCaptureTriggerFrames);
 
     // Page guard environment variables
     LoadSingleOptionEnvVar(options, kPageGuardCopyOnMapEnvVar, kOptionKeyPageGuardCopyOnMap);
@@ -280,6 +311,14 @@ void CaptureSettings::LoadOptionsEnvVar(OptionsMap* options)
     LoadSingleOptionEnvVar(options, kPageGuardAlignBufferSizesEnvVar, kOptionKeyPageGuardAlignBufferSizes);
     LoadSingleOptionEnvVar(options, kPageGuardTrackAhbMemoryEnvVar, kOptionKeyPageGuardTrackAhbMemory);
     LoadSingleOptionEnvVar(options, kPageGuardExternalMemoryEnvVar, kOptionKeyPageGuardExternalMemory);
+
+    // Debug environment variables
+    LoadSingleOptionEnvVar(options, kDebugLayerEnvVar, kDebugLayer);
+    LoadSingleOptionEnvVar(options, kDebugDeviceLostEnvVar, kDebugDeviceLost);
+
+    // Screenshot environment variables
+    LoadSingleOptionEnvVar(options, kScreenshotDirEnvVar, kOptionKeyScreenshotDir);
+    LoadSingleOptionEnvVar(options, kScreenshotFramesEnvVar, kOptionKeyScreenshotFrames);
 }
 
 void CaptureSettings::LoadOptionsFile(OptionsMap* options)
@@ -328,12 +367,17 @@ void CaptureSettings::ProcessOptions(OptionsMap* options, CaptureSettings* setti
     // with trim key will be parsed only
     // if trim ranges is empty, else it will be ignored
     ParseTrimRangeString(FindOption(options, kOptionKeyCaptureFrames), &settings->trace_settings_.trim_ranges);
-    std::string trim_key_option = FindOption(options, kOptionKeyCaptureTrigger);
+    std::string trim_key_option        = FindOption(options, kOptionKeyCaptureTrigger);
+    std::string trim_key_frames_option = FindOption(options, kOptionKeyCaptureTriggerFrames);
     if (!trim_key_option.empty())
     {
         if (settings->trace_settings_.trim_ranges.empty())
         {
             settings->trace_settings_.trim_key = ParseTrimKeyString(trim_key_option);
+            if (!trim_key_frames_option.empty())
+            {
+                settings->trace_settings_.trim_key_frames = ParseTrimKeyFramesString(trim_key_frames_option);
+            }
         }
         else
         {
@@ -357,7 +401,18 @@ void CaptureSettings::ProcessOptions(OptionsMap* options, CaptureSettings* setti
     settings->trace_settings_.page_guard_external_memory = ParseBoolString(
         FindOption(options, kOptionKeyPageGuardExternalMemory), settings->trace_settings_.page_guard_external_memory);
 
+    // Debug options
+    settings->trace_settings_.debug_layer =
+        ParseBoolString(FindOption(options, kDebugLayer), settings->trace_settings_.debug_layer);
+    settings->trace_settings_.debug_device_lost =
+        ParseBoolString(FindOption(options, kDebugDeviceLost), settings->trace_settings_.debug_device_lost);
+
     ProcessLogOptions(options, settings);
+
+    // Screenshot options
+    settings->trace_settings_.screenshot_dir =
+        FindOption(options, kOptionKeyScreenshotDir, settings->trace_settings_.screenshot_dir);
+    ParseFramesList(FindOption(options, kOptionKeyScreenshotFrames), &settings->trace_settings_.screenshot_ranges);
 }
 
 void CaptureSettings::ProcessLogOptions(OptionsMap* options, CaptureSettings* settings)
@@ -408,27 +463,7 @@ std::string CaptureSettings::FindOption(OptionsMap* options, const std::string& 
 
 bool CaptureSettings::ParseBoolString(const std::string& value_string, bool default_value)
 {
-    bool result = default_value;
-
-    // Checking for "false" or zero, or "true" or a non-zero number.
-    if ((util::platform::StringCompareNoCase("true", value_string.c_str()) == 0) || (atoi(value_string.c_str()) != 0))
-    {
-        result = true;
-    }
-    else if ((util::platform::StringCompareNoCase("false", value_string.c_str()) == 0) || (value_string == "0"))
-    {
-        result = false;
-    }
-    else
-    {
-        if (!value_string.empty())
-        {
-            GFXRECON_LOG_WARNING("Settings Loader: Ignoring unrecognized Boolean option value \"%s\"",
-                                 value_string.c_str());
-        }
-    }
-
-    return result;
+    return gfxrecon::util::ParseBoolString(value_string, default_value);
 }
 
 CaptureSettings::MemoryTrackingMode
@@ -639,6 +674,24 @@ void CaptureSettings::ParseTrimRangeString(const std::string&                   
     }
 }
 
+void CaptureSettings::ParseFramesList(const std::string& value_string, std::vector<util::FrameRange>* frames)
+{
+    GFXRECON_ASSERT(frames != nullptr);
+
+    if (!value_string.empty())
+    {
+        std::vector<gfxrecon::util::FrameRange> frame_ranges = gfxrecon::util::GetFrameRanges(value_string);
+
+        for (uint32_t i = 0; i < frame_ranges.size(); ++i)
+        {
+            util::FrameRange range{};
+            range.first = frame_ranges[i].first;
+            range.last  = frame_ranges[i].last;
+            frames->push_back(range);
+        }
+    }
+}
+
 std::string CaptureSettings::ParseTrimKeyString(const std::string& value_string)
 {
     std::string trim_key;
@@ -653,6 +706,27 @@ std::string CaptureSettings::ParseTrimKeyString(const std::string& value_string)
         GFXRECON_LOG_WARNING("Settings Loader: Ignoring invalid trim trigger key \"%s\"", trim_key.c_str());
     }
     return trim_key;
+}
+
+uint32_t CaptureSettings::ParseTrimKeyFramesString(const std::string& value_string)
+{
+    uint32_t frames = 0;
+    size_t   digits = std::count_if(value_string.begin(), value_string.end(), ::isdigit);
+    bool     valid  = false;
+    if (digits == value_string.length())
+    {
+        int value = std::stoi(value_string);
+        if (value > 0)
+        {
+            frames = static_cast<uint32_t>(value);
+            valid  = true;
+        }
+    }
+    if (!valid)
+    {
+        GFXRECON_LOG_WARNING("Settings Loader: Ignoring invalid trim trigger key frames \"%s\"", value_string.c_str());
+    }
+    return frames;
 }
 
 GFXRECON_END_NAMESPACE(encode)

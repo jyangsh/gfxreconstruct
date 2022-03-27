@@ -44,6 +44,8 @@
 #include "util/defines.h"
 #include "util/logging.h"
 
+#include "application/application.h"
+
 #include "vulkan/vulkan.h"
 
 #include <algorithm>
@@ -66,7 +68,7 @@ GFXRECON_BEGIN_NAMESPACE(decode)
 class VulkanReplayConsumerBase : public VulkanConsumer
 {
   public:
-    VulkanReplayConsumerBase(WindowFactory* window_factory, const ReplayOptions& options);
+    VulkanReplayConsumerBase(std::shared_ptr<application::Application> application, const VulkanReplayOptions& options);
 
     virtual ~VulkanReplayConsumerBase() override;
 
@@ -150,18 +152,21 @@ class VulkanReplayConsumerBase : public VulkanConsumer
                                          const std::vector<uint64_t>& level_sizes,
                                          const uint8_t*               data) override;
 
-    virtual void Process_vkUpdateDescriptorSetWithTemplate(format::HandleId                 device,
+    virtual void Process_vkUpdateDescriptorSetWithTemplate(const ApiCallInfo&               call_info,
+                                                           format::HandleId                 device,
                                                            format::HandleId                 descriptorSet,
                                                            format::HandleId                 descriptorUpdateTemplate,
                                                            DescriptorUpdateTemplateDecoder* pData) override;
 
-    virtual void Process_vkCmdPushDescriptorSetWithTemplateKHR(format::HandleId commandBuffer,
-                                                               format::HandleId descriptorUpdateTemplate,
-                                                               format::HandleId layout,
-                                                               uint32_t         set,
+    virtual void Process_vkCmdPushDescriptorSetWithTemplateKHR(const ApiCallInfo& call_info,
+                                                               format::HandleId   commandBuffer,
+                                                               format::HandleId   descriptorUpdateTemplate,
+                                                               format::HandleId   layout,
+                                                               uint32_t           set,
                                                                DescriptorUpdateTemplateDecoder* pData) override;
 
-    virtual void Process_vkUpdateDescriptorSetWithTemplateKHR(format::HandleId                 device,
+    virtual void Process_vkUpdateDescriptorSetWithTemplateKHR(const ApiCallInfo&               call_info,
+                                                              format::HandleId                 device,
                                                               format::HandleId                 descriptorSet,
                                                               format::HandleId                 descriptorUpdateTemplate,
                                                               DescriptorUpdateTemplateDecoder* pData) override;
@@ -448,6 +453,20 @@ class VulkanReplayConsumerBase : public VulkanConsumer
         PFN_vkGetPhysicalDeviceMemoryProperties2                         func,
         PhysicalDeviceInfo*                                              physical_device_info,
         StructPointerDecoder<Decoded_VkPhysicalDeviceMemoryProperties2>* pMemoryProperties);
+
+    VkResult OverrideGetPhysicalDeviceSurfaceCapabilitiesKHR(
+        PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR           func,
+        VkResult                                                original_result,
+        PhysicalDeviceInfo*                                     physical_device_info,
+        SurfaceKHRInfo*                                         surface_info,
+        StructPointerDecoder<Decoded_VkSurfaceCapabilitiesKHR>* pSurfaceCapabilities);
+
+    VkResult OverrideGetPhysicalDeviceSurfaceCapabilities2KHR(
+        PFN_vkGetPhysicalDeviceSurfaceCapabilities2KHR                 func,
+        VkResult                                                       original_result,
+        PhysicalDeviceInfo*                                            physical_device_info,
+        StructPointerDecoder<Decoded_VkPhysicalDeviceSurfaceInfo2KHR>* pSurfaceInfo,
+        StructPointerDecoder<Decoded_VkSurfaceCapabilities2KHR>*       pSurfaceCapabilities);
 
     VkResult OverrideWaitForFences(PFN_vkWaitForFences                  func,
                                    VkResult                             original_result,
@@ -892,7 +911,10 @@ class VulkanReplayConsumerBase : public VulkanConsumer
                                      const std::vector<std::string>& enabled_device_extensions,
                                      VulkanResourceAllocator*        allocator);
 
-    VkResult CreateSurface(InstanceInfo* instance_info, VkFlags flags, HandlePointerDecoder<VkSurfaceKHR>* surface);
+    VkResult CreateSurface(InstanceInfo*                       instance_info,
+                           const std::string&                  wsi_extension,
+                           VkFlags                             flags,
+                           HandlePointerDecoder<VkSurfaceKHR>* surface);
 
     void MapDescriptorUpdateTemplateHandles(const DescriptorUpdateTemplateInfo* update_template_info,
                                             DescriptorUpdateTemplateDecoder*    decoder);
@@ -977,10 +999,10 @@ class VulkanReplayConsumerBase : public VulkanConsumer
     std::unordered_map<encode::DispatchKey, encode::InstanceTable>   instance_tables_;
     std::unordered_map<encode::DispatchKey, encode::DeviceTable>     device_tables_;
     std::function<void(const char*)>                                 fatal_error_handler_;
-    WindowFactory*                                                   window_factory_;
+    std::shared_ptr<application::Application>                        application_;
     VulkanObjectInfoTable                                            object_info_table_;
     ActiveWindows                                                    active_windows_;
-    ReplayOptions                                                    options_;
+    VulkanReplayOptions                                              options_;
     bool                                                             loading_trim_state_;
     bool                                                             have_imported_semaphores_;
     SwapchainImageTracker                                            swapchain_image_tracker_;

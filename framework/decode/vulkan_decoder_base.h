@@ -55,8 +55,14 @@ class VulkanDecoderBase : public ApiDecoder
 
     virtual bool SupportsApiCall(format::ApiCallId call_id) override
     {
-        return ((call_id >= format::ApiCallId::ApiCall_vkCreateInstance) &&
-                (call_id < format::ApiCallId::ApiCall_VulkanLast));
+        return (format::GetApiCallFamily(call_id) == format::ApiFamilyId::ApiFamily_Vulkan);
+    }
+
+    virtual bool SupportsMetaDataId(format::MetaDataId meta_data_id) override
+    {
+        // For backwards compatibility, an encoded API of ApiFamily_None indicates the Vulkan API.
+        format::ApiFamilyId api = format::GetMetaDataApi(meta_data_id);
+        return (api == format::ApiFamilyId::ApiFamily_None) || (api == format::ApiFamilyId::ApiFamily_Vulkan);
     }
 
     virtual void DecodeFunctionCall(format::ApiCallId  call_id,
@@ -158,11 +164,17 @@ class VulkanDecoderBase : public ApiDecoder
     const std::vector<VulkanConsumer*>& GetConsumers() const { return consumers_; }
 
   private:
-    size_t Decode_vkUpdateDescriptorSetWithTemplate(const uint8_t* parameter_buffer, size_t buffer_size);
+    size_t Decode_vkUpdateDescriptorSetWithTemplate(const ApiCallInfo& call_info,
+                                                    const uint8_t*     parameter_buffer,
+                                                    size_t             buffer_size);
 
-    size_t Decode_vkCmdPushDescriptorSetWithTemplateKHR(const uint8_t* parameter_buffer, size_t buffer_size);
+    size_t Decode_vkCmdPushDescriptorSetWithTemplateKHR(const ApiCallInfo& call_info,
+                                                        const uint8_t*     parameter_buffer,
+                                                        size_t             buffer_size);
 
-    size_t Decode_vkUpdateDescriptorSetWithTemplateKHR(const uint8_t* parameter_buffer, size_t buffer_size);
+    size_t Decode_vkUpdateDescriptorSetWithTemplateKHR(const ApiCallInfo& call_info,
+                                                       const uint8_t*     parameter_buffer,
+                                                       size_t             buffer_size);
 
   private:
     std::vector<VulkanConsumer*> consumers_;

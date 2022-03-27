@@ -2,22 +2,26 @@ add_library(gfxrecon_encode STATIC "")
 
 target_sources(gfxrecon_encode
                PRIVATE
+                   ${GFXRECON_SOURCE_DIR}/framework/encode/capture_manager.h
+                   ${GFXRECON_SOURCE_DIR}/framework/encode/capture_manager.cpp               
                    ${GFXRECON_SOURCE_DIR}/framework/encode/capture_settings.h
                    ${GFXRECON_SOURCE_DIR}/framework/encode/capture_settings.cpp
-                   ${GFXRECON_SOURCE_DIR}/framework/encode/custom_encoder_commands.h
+                   ${GFXRECON_SOURCE_DIR}/framework/encode/custom_vulkan_encoder_commands.h
                    ${GFXRECON_SOURCE_DIR}/framework/encode/custom_vulkan_api_call_encoders.h
                    ${GFXRECON_SOURCE_DIR}/framework/encode/custom_vulkan_api_call_encoders.cpp
                    ${GFXRECON_SOURCE_DIR}/framework/encode/custom_vulkan_array_size_2d.h
+                   ${GFXRECON_SOURCE_DIR}/framework/encode/custom_vulkan_command_buffer_util.cpp
                    ${GFXRECON_SOURCE_DIR}/framework/encode/custom_vulkan_struct_encoders.h
                    ${GFXRECON_SOURCE_DIR}/framework/encode/custom_vulkan_struct_encoders.cpp
                    ${GFXRECON_SOURCE_DIR}/framework/encode/custom_vulkan_struct_handle_wrappers.h
                    ${GFXRECON_SOURCE_DIR}/framework/encode/custom_vulkan_struct_handle_wrappers.cpp
                    ${GFXRECON_SOURCE_DIR}/framework/encode/descriptor_update_template_info.h
+                   ${GFXRECON_SOURCE_DIR}/framework/encode/handle_unwrap_memory.h
                    ${GFXRECON_SOURCE_DIR}/framework/encode/parameter_buffer.h
                    ${GFXRECON_SOURCE_DIR}/framework/encode/parameter_encoder.h
                    ${GFXRECON_SOURCE_DIR}/framework/encode/struct_pointer_encoder.h
-                   ${GFXRECON_SOURCE_DIR}/framework/encode/trace_manager.h
-                   ${GFXRECON_SOURCE_DIR}/framework/encode/trace_manager.cpp
+                   ${GFXRECON_SOURCE_DIR}/framework/encode/vulkan_capture_manager.h
+                   ${GFXRECON_SOURCE_DIR}/framework/encode/vulkan_capture_manager.cpp
                    ${GFXRECON_SOURCE_DIR}/framework/encode/vulkan_handle_wrappers.h
                    ${GFXRECON_SOURCE_DIR}/framework/encode/vulkan_handle_wrapper_util.h
                    ${GFXRECON_SOURCE_DIR}/framework/encode/vulkan_handle_wrapper_util.cpp

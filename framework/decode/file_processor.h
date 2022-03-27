@@ -111,7 +111,7 @@ class FileProcessor
 
     bool ProcessFunctionCall(const format::BlockHeader& block_header, format::ApiCallId call_id);
 
-    bool ProcessMetaData(const format::BlockHeader& block_header, format::MetaDataType meta_type);
+    bool ProcessMetaData(const format::BlockHeader& block_header, format::MetaDataId meta_data_id);
 
     bool ProcessStateMarker(const format::BlockHeader& block_header, format::MarkerType marker_type);
 
@@ -137,6 +137,7 @@ class FileProcessor
     std::vector<uint8_t>                parameter_buffer_;
     std::vector<uint8_t>                compressed_parameter_buffer_;
     util::Compressor*                   compressor_;
+    uint64_t                            api_call_index_;
 };
 
 GFXRECON_END_NAMESPACE(decode)

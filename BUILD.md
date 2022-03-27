@@ -17,7 +17,7 @@ Copyright &copy; 2018-2020 LunarG, Inc.
 3. [Repository Set-Up](#repository-set-up)
 4. [Windows Build](#building-for-windows)
 5. [Linux Build](#building-for-linux)
-6. [Android Build](#android)
+6. [Android Build](#building-for-android)
 
 ## Introduction
 
@@ -203,6 +203,12 @@ For Ubuntu, the required packages can be installed with the following command:
 ```bash
 sudo apt-get install git cmake build-essential libx11-xcb-dev libxcb-keysyms1-dev \
         libwayland-dev libxrandr-dev zlib1g-dev liblz4-dev libzstd-dev
+```
+
+For 32-bit builds (DXVK might require 32-bit):
+```bash
+sudo apt-get install g++-multilib libx11-xcb-dev:i386 libxcb-keysyms1-dev:i386 \
+        libwayland-dev:i386 libxrandr-dev:i386 zlib1g-dev:i386 liblz4-dev:i386 libzstd-dev:i386
 ```
 
 For arm64 builds (cross compilation):

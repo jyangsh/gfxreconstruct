@@ -30,22 +30,26 @@ add_library(gfxrecon_encode STATIC "")
 
 target_sources(gfxrecon_encode
                PRIVATE
+                    ${CMAKE_CURRENT_LIST_DIR}/capture_manager.h
+                    ${CMAKE_CURRENT_LIST_DIR}/capture_manager.cpp
                     ${CMAKE_CURRENT_LIST_DIR}/capture_settings.h
                     ${CMAKE_CURRENT_LIST_DIR}/capture_settings.cpp
-                    ${CMAKE_CURRENT_LIST_DIR}/custom_encoder_commands.h
+                    ${CMAKE_CURRENT_LIST_DIR}/custom_vulkan_encoder_commands.h
                     ${CMAKE_CURRENT_LIST_DIR}/custom_vulkan_api_call_encoders.h
                     ${CMAKE_CURRENT_LIST_DIR}/custom_vulkan_api_call_encoders.cpp
                     ${CMAKE_CURRENT_LIST_DIR}/custom_vulkan_array_size_2d.h
+                    ${CMAKE_CURRENT_LIST_DIR}/custom_vulkan_command_buffer_util.cpp
                     ${CMAKE_CURRENT_LIST_DIR}/custom_vulkan_struct_encoders.h
                     ${CMAKE_CURRENT_LIST_DIR}/custom_vulkan_struct_encoders.cpp
                     ${CMAKE_CURRENT_LIST_DIR}/custom_vulkan_struct_handle_wrappers.h
                     ${CMAKE_CURRENT_LIST_DIR}/custom_vulkan_struct_handle_wrappers.cpp
                     ${CMAKE_CURRENT_LIST_DIR}/descriptor_update_template_info.h
+                    ${CMAKE_CURRENT_LIST_DIR}/handle_unwrap_memory.h
                     ${CMAKE_CURRENT_LIST_DIR}/parameter_buffer.h
                     ${CMAKE_CURRENT_LIST_DIR}/parameter_encoder.h
                     ${CMAKE_CURRENT_LIST_DIR}/struct_pointer_encoder.h
-                    ${CMAKE_CURRENT_LIST_DIR}/trace_manager.h
-                    ${CMAKE_CURRENT_LIST_DIR}/trace_manager.cpp
+                    ${CMAKE_CURRENT_LIST_DIR}/vulkan_capture_manager.h
+                    ${CMAKE_CURRENT_LIST_DIR}/vulkan_capture_manager.cpp
                     ${CMAKE_CURRENT_LIST_DIR}/vulkan_handle_wrappers.h
                     ${CMAKE_CURRENT_LIST_DIR}/vulkan_handle_wrapper_util.h
                     ${CMAKE_CURRENT_LIST_DIR}/vulkan_handle_wrapper_util.cpp

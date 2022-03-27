@@ -20,43 +20,64 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
-import os,re,sys
+import os, re, sys
 from base_generator import *
+
 
 class VulkanStateTableHeaderGeneratorOptions(BaseGeneratorOptions):
     """Options for generating C++ function declarations for Vulkan API parameter encoding"""
-    def __init__(self,
-                 blacklists = None,         # Path to JSON file listing apicalls and structs to ignore.
-                 platformTypes = None,      # Path to JSON file listing platform (WIN32, X11, etc.) defined types.
-                 filename = None,
-                 directory = '.',
-                 prefixText = '',
-                 protectFile = False,
-                 protectFeature = True):
-        BaseGeneratorOptions.__init__(self, blacklists, platformTypes,
-                                      filename, directory, prefixText,
-                                      protectFile, protectFeature)
+
+    def __init__(
+        self,
+        blacklists=None,  # Path to JSON file listing apicalls and structs to ignore.
+        platformTypes=None,  # Path to JSON file listing platform (WIN32, X11, etc.) defined types.
+        filename=None,
+        directory='.',
+        prefixText='',
+        protectFile=False,
+        protectFeature=True,
+        extraVulkanHeaders=[]
+    ):
+        BaseGeneratorOptions.__init__(
+            self,
+            blacklists,
+            platformTypes,
+            filename,
+            directory,
+            prefixText,
+            protectFile,
+            protectFeature,
+            extraVulkanHeaders=extraVulkanHeaders
+        )
+
 
 # Generates declarations for functions for Vulkan state table
 class VulkanStateTableHeaderGenerator(BaseGenerator):
 
-    def __init__(self,
-                 errFile = sys.stderr,
-                 warnFile = sys.stderr,
-                 diagFile = sys.stdout):
-        BaseGenerator.__init__(self,
-                               processCmds=True, processStructs=False, featureBreak=True,
-                               errFile=errFile, warnFile=warnFile, diagFile=diagFile)
-
+    def __init__(
+        self, err_file=sys.stderr, warn_file=sys.stderr, diag_file=sys.stdout
+    ):
+        BaseGenerator.__init__(
+            self,
+            process_cmds=True,
+            process_structs=False,
+            feature_break=True,
+            err_file=err_file,
+            warn_file=warn_file,
+            diag_file=diag_file
+        )
 
     # Method override
+    # yapf: disable
     def beginFile(self, genOpts):
         BaseGenerator.beginFile(self, genOpts)
         self.write_include()
         write('GFXRECON_BEGIN_NAMESPACE(gfxrecon)', file=self.outFile)
         write('GFXRECON_BEGIN_NAMESPACE(encode)', file=self.outFile)
+    # yapf: enable
 
     # Method override
+    # yapf: disable
     def endFile(self):
         self.generate_all()
         write('GFXRECON_END_NAMESPACE(encode)', file=self.outFile)
@@ -64,7 +85,9 @@ class VulkanStateTableHeaderGenerator(BaseGenerator):
 
         # Finish processing in superclass
         BaseGenerator.endFile(self)
+    # yapf: enable
 
+    # yapf: disable
     def generate_all(self):
         insert_code = ''
         remove_code = ''
@@ -73,12 +96,12 @@ class VulkanStateTableHeaderGenerator(BaseGenerator):
         visit_code = ''
         map_code = ''
 
-        for handle_name in sorted(self.handleNames):
+        for handle_name in sorted(self.handle_names):
             if handle_name in self.DUPLICATE_HANDLE_TYPES:
-                continue            
+                continue
             handle_name = handle_name[2:]
             handle_wrapper = handle_name + 'Wrapper'
-            handle_map = handle_name[0].lower() + handle_name[1:] + '_map_'            
+            handle_map = handle_name[0].lower() + handle_name[1:] + '_map_'
             insert_code += '    bool InsertWrapper(format::HandleId id, {0}* wrapper) {{ return InsertEntry(id, wrapper, {1}); }}\n'.format(handle_wrapper, handle_map)
             remove_code += '    bool RemoveWrapper(const {0}* wrapper) {{ return RemoveEntry(wrapper, {1}); }}\n'.format(handle_wrapper, handle_map)
             visit_code += '    void VisitWrappers(std::function<void({0}*)> visitor) const {{ for (auto entry : {1}) {{ visitor(entry.second); }} }}\n'.format(handle_wrapper, handle_map)
@@ -107,7 +130,10 @@ class VulkanStateTableHeaderGenerator(BaseGenerator):
         code += map_code
         code += '};\n'
         write(code, file=self.outFile)
+    # yapf: enable
 
     def write_include(self):
-        write('#include "encode/vulkan_state_table_base.h"\n', file=self.outFile)
+        write(
+            '#include "encode/vulkan_state_table_base.h"\n', file=self.outFile
+        )
         self.newline()
